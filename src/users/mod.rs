@@ -1,4 +1,4 @@
-use crate::{Client, RoboatError, User};
+use crate::{Client, RoboatError, User, XCSRF_HEADER};
 use reqwest::header::{self, HeaderValue};
 use serde::{Deserialize, Serialize};
 
@@ -56,6 +56,15 @@ pub struct UsernameUserDetails {
     pub id: u64,
     #[serde(alias = "hasVerifiedBadge")]
     pub has_verified_badge: bool,
+}
+
+
+// The presence of a user. Fetched from <https://presence.roblox.com/v1/presence/users>.
+#[allow(missing_docs)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct UserPresenceResponse {
+    pub user_presences: Vec<request_types::UserPresenceRaw>,
 }
 
 impl Client {
@@ -153,6 +162,54 @@ impl Client {
         Ok(users)
     }
 
+
+    // Fetches user presence using <https://presence.roblox.com/v1/presence/users>.
+    /// # Notes
+    /// * Does not require a valid roblosecurity.
+    /// * HOWEVER, if a valid roblosecurity is not provided then there will be a very low rate limit.
+    /// # Example
+    ///
+    /// ```no_run
+    /// use roboat::ClientBuilder;
+    ///
+    /// const USER_IDS = vec![2207291, 123];
+    ///
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// let client = ClientBuilder::new().build();
+    ///
+    /// let user_presences = client.user_presence(USER_IDS).await?;
+    ///
+    /// for user_presence in user_presences.user_presences {
+    ///     println!("User ID: {}", user_presence.user_id.unwrap());
+    ///     println!("Last Online: {}", user_presence.last_online);
+    ///     println!("Last Location: {}", user_presence.last_location.unwrap_or("None".to_string()));
+    ///     println!("Place ID: {}", user_presence.place_id.unwrap_or(0));
+    ///     println!("Root Place ID: {}", user_presence.root_place_id.unwrap_or(0));
+    ///     println!("Game ID: {}", user_presence.game_id.unwrap_or("None".to_string()));
+    ///     println!("Universe ID: {}", user_presence.universe_id.unwrap_or(0));
+    ///     println!("Invisible Mod Expiry: {}", user_presence.invisible_mod_expiry.unwrap_or("None".to_string()));
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn user_presence(&self, user_ids: Vec<u64>) -> Result<UserPresenceResponse, RoboatError> {
+        let cookie_string = self.cookie_string().unwrap_or(HeaderValue::from_static(""));
+
+        let json = serde_json::json!({ "userIds": user_ids });
+        let request_result = self
+            .reqwest_client
+            .post("https://presence.roblox.com/v1/presence/users")
+            .header(header::COOKIE, cookie_string)
+            .json(&json)
+            .send()
+            .await;
+
+        let response = Self::validate_request_result(request_result).await?;
+        let raw = Self::parse_to_raw::<UserPresenceResponse>(response).await?;
+        Ok(raw)
+    }
+
     /// Fetches user details using <https://users.roblox.com/v1/users/{user_id}>.
     ///
     /// For bulk fetching, it is recommended to use [`Client::username_user_details`]
@@ -248,7 +305,7 @@ impl Client {
                 usernames,
                 exclude_banned_users,
             })
-            .send()
+        .send()
             .await;
 
         let response = Self::validate_request_result(request_result).await?;
@@ -265,7 +322,8 @@ impl Client {
                 id: user.id,
                 has_verified_badge: user.has_verified_badge,
             })
-            .collect();
+        .collect();
         Ok(users)
     }
 }
+
