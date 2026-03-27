@@ -228,6 +228,8 @@ mod auth;
 pub mod bedev2;
 /// A module for endpoints prefixed with <https://catalog.roblox.com/*>.
 pub mod catalog;
+/// A module for endpoints prefixed with <https://clientsettings.roblox.com/*>.
+pub mod clientsettings;
 /// A module for endpoints prefixed with <https://chat.roblox.com/*>.
 mod chat;
 /// A module related to the [`Client`] struct.
