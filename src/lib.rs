@@ -73,6 +73,10 @@
 //!   - Upload New Animation - [`Client::upload_new_animation`]
 //!   - Get User Games - [`Client::user_games`]
 //!   - Get Group Games - [`Client::group_games`]
+//! * Client Settings
+//!   - Get Client Version - [`Client::client_version`]
+//!   - Get Client Version for Channel - [`Client::client_version_for_channel`]
+//!   - Get User Channel - [`Client::user_channel`]
 //! * UNDER CONSTRUCTION
 //!   - Upload Classic Clothing To Group - [`Client::upload_classic_clothing_to_group`]
 //!
@@ -228,12 +232,12 @@ mod auth;
 pub mod bedev2;
 /// A module for endpoints prefixed with <https://catalog.roblox.com/*>.
 pub mod catalog;
-/// A module for endpoints prefixed with <https://clientsettings.roblox.com/*>.
-pub mod clientsettings;
 /// A module for endpoints prefixed with <https://chat.roblox.com/*>.
 mod chat;
 /// A module related to the [`Client`] struct.
 mod client;
+/// A module for endpoints prefixed with <https://clientsettings.roblox.com/*>.
+pub mod clientsettings;
 /// A module for endpoints prefixed with <https://economy.roblox.com/*>.
 pub mod economy;
 /// A module for endpoints prefixed with <https://friends.roblox.com/*>.

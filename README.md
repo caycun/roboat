@@ -89,6 +89,10 @@ Documentation can be found [here](https://docs.rs/roboat/).
 * Games API - [`games.roblox.com/*`]
     - Get User Games - [`Client::user_games`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.user_games)
     - Get Group Games - [`Client::group_games`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.group_games)
+* Client Settings
+   - Get Client Version - [`Client::client_version`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.client_version)
+   - Get Client Version for Channel - [`Client::client_version_for_channel`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.client_version_for_channel)
+   - Get User Channel - [`Client::user_channel`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.user_channel)
 * UNDER CONSTRUCTION
     - Upload Classic Clothing to Group - [`Client::upload_classic_clothing_to_group`](https://docs.rs/roboat/latest/roboat/struct.Client.html#method.upload_classic_clothing_to_group)
 
